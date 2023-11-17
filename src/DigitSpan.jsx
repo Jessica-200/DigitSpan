@@ -1,11 +1,10 @@
-
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Button, StyleSheet } from 'react-native';
 
 import Tile from './Tile';
 
 const gameRules = {
-  size: 3,
+  size: 2,
   tileDelay: 500,  // Time between tiles lighting up in sequence
   sequenceDelay: 750,  // Time between sequences
 };
@@ -325,23 +324,23 @@ function DigitSpan() {
   }
 
   return (
-    <View style={styles.container}>
-        <Text style={styles.roundsLeft}>Rounds Left</Text>
-    </View>
-    // <>
-    //   <div className="tile-grid">
-    //     { tiles.map( (tile, index) => {
-    //       return(
-    //         <Tile active={tile.active} tile={index} handleClick={handleClick} key={tile.key}>
-    //           {tile.x}, {tile.y}, {index}
-    //         </Tile>
-    //       )
-    //     })}
-    //   </div>
-    //   <div className="buttons">
-    //     <button onClick={ () => setGameStarted(true)}>Start</button>
-    //   </div>
-    // </>
+    <>
+      <View style={styles.tileGrid}>
+        {tiles.map((tile, index) => (
+          <Tile
+            active={tile.active}
+            tile={index}
+            handleClick={() => handleClick(index)}
+            key={tile.key}
+          >
+            {tile.x}, {tile.y}, {index}
+          </Tile>
+        ))}
+      </View>
+      <View style={styles.buttons}>
+        <Button title="Start" onPress={() => setGameStarted(true)} />
+      </View>
+    </>
   );
 }
 
