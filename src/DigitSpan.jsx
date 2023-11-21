@@ -3,8 +3,11 @@ import { View, Button, StyleSheet } from 'react-native';
 
 import Tile from './Tile';
 
+// So this would make a 3x3 board; 9 Tiles total
+const gridSize = 3;
+
 const gameRules = {
-  size: 2,
+  size: gridSize,
   tileDelay: 500,  // Time between tiles lighting up in sequence
   sequenceDelay: 750,  // Time between sequences
 };
@@ -323,48 +326,70 @@ function DigitSpan() {
     }
   }
 
-  return (
-    <>
-      <View style={styles.tileGrid}>
-        {tiles.map((tile, index) => (
+  // Stuff for Styling / Formatting
+  const renderRow = (rowTiles, rowIndex) => (
+    <View style={styles.row} key={rowIndex}>
+      {rowTiles.map((tile, columnIndex) => {
+        const index = rowIndex * gridSize + columnIndex;
+        return (
           <Tile
             active={tile.active}
+            key={tile.key}
             tile={index}
             handleClick={() => handleClick(index)}
-            key={tile.key}
           >
             {tile.x}, {tile.y}, {index}
           </Tile>
-        ))}
-      </View>
-      <View style={styles.buttons}>
-        <Button title="Start" onPress={() => setGameStarted(true)} />
-      </View>
+        );
+      })}
+    </View>
+  );
+
+  const groupedTiles = tiles.reduce((acc, tile) => {
+    const key = tile.x;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(tile);
+    return acc;
+  }, {});
+
+  const rows = Object.values(groupedTiles);
+
+  return (
+    <>
+    <View style={styles.container}>
+      {rows.map(renderRow)}
+    </View>
+
+    <View style={styles.buttons}>
+      <Button title="Start" onPress={() => setGameStarted(true)} />
+    </View>
     </>
   );
 }
 
 
-const styles = StyleSheet.create( {
-    container: {
-        flex: 1,
-    },
-    roundsLeft: {
-        padding: 20,
-        alignItems: 'center',
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    tileGrid: {
-        justifyContent: 'center',
-        gap: 32,
-        margin: 32,
-    },
-    buttons: {
-        display: 'flex',
-        gap: 16,
-        justifyContent: 'center',
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  tile: {
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#000',
+    marginRight: 8,
+  },
+  activeTile: {
+    backgroundColor: 'yellow', // Add your active tile style here
+  },
 });
 
 export default DigitSpan;
