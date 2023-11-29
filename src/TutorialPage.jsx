@@ -1,49 +1,40 @@
 // TutorialPage to display instructions & visual example
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { SafeAreaView, Button, StyleSheet, Image, ScrollView, Dimensions } from 'react-native';
 
 // onNext is a prop being passed between this TutorialPage & App
 // so when 'Next' button is clicked it'll change to DigitSpan
 const TutorialPage = ({ onNext }) => {
-  return (
-    <View style={styles.tutorialContainer}>
-      <View style={styles.taskHeader}>
-        <Text style={styles.headerText}>Digit Span Task</Text>
-      </View>
 
-      <View style={styles.stepsContainer}>
-        <Text style={styles.stepsText}>Write out game steps here</Text>
-      </View>
+  // TODO: If we do a separate Backwards Page maybe don't need scrolling
+  const screenHeight = Dimensions.get('window').height;
+  const screenWidth = Dimensions.get('window').width;
+
+  return (
+    <SafeAreaView style={styles.container}>
+      
+      <ScrollView contentContainerStyle={styles.scrollView}>
+      <Image source={require('./DigitSpanInstructions.jpg')} 
+        style={{width: screenWidth, height: screenHeight + 200}}
+        resizeMode="contain"/>
+      </ScrollView>
 
       <Button style={styles.nextButton} title="Next" onPress={onNext}></Button>
 
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create( {
-  tutorialContainer: {
-    flex: 1,
+  container: {
+    flex: 1
   },
-  taskHeader: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  stepsContainer: {
-    flex: 1,
+  scrollView: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 18,
-  },
-  stepsText: {
-    fontSize: 20,
   },
   nextButton: {
-    position: 'absolute',
     bottom: 16,
     right: 16,
     backgroundColor: 'blue',
