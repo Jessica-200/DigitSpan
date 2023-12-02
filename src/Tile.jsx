@@ -1,4 +1,4 @@
-import { TouchableOpacity, StyleSheet, Text } from "react-native";
+import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
 
 function Tile({active, tile, handleClick, children}) {
 
@@ -11,10 +11,13 @@ function Tile({active, tile, handleClick, children}) {
   return (
     // Conditionally rendering the '.active' class allows us to conditionally apply
     // stylings
-    <TouchableOpacity style={[styles.tile, active && styles.activeTile]}
+    <View style={{width: 125, height: 125}}>
+      <TouchableOpacity style={[styles.tile, active && styles.activeTile]}
       onPress={handleTileClick}>
       <Text>{children}</Text>
     </TouchableOpacity>
+    </View>
+    
   );
 }
 
@@ -25,8 +28,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     backgroundColor: '#16309a',
-    width: 125,
-    height: 125,
+    width: 90,
+    height: 90,
     borderRadius: 12,
   },
   activeTile: {
@@ -34,6 +37,7 @@ const styles = StyleSheet.create({
     color: 'white',
     elevation: 8,
   },
+  
 });
   
 export default Tile;
