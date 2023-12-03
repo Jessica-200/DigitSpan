@@ -30,6 +30,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#16309a',
     width: 90,
     height: 90,
+    width: 90,
+    height: 90,
     borderRadius: 12,
   },
   activeTile: {
