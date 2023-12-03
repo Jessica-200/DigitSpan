@@ -1,15 +1,16 @@
+
 import { useState, useEffect, useRef } from 'react';
-import { View, Button, StyleSheet } from 'react-native';
+import { View, Button, StyleSheet, Text, TouchableOpacity, Animated } from 'react-native';
 
 import Tile from './Tile';
+import Modal from './Modal';
 
-// So this would make a 3x3 board; 9 Tiles total
 const gridSize = 3;
 
 const gameRules = {
   size: gridSize,
   tileDelay: 500,  // Time between tiles lighting up in sequence
-  sequenceDelay: 750,  // Time between sequences
+  sequenceDelay: 1250,  // Time between sequences
 };
 
 /**
@@ -161,6 +162,37 @@ const wait = async (delay) => {
   // Continue with other code here after the delay is over
 };
 
+/**
+ * Returns a RoundInfo object used for analytics-- tracks relevant data points
+ * for each round of the game
+ * @returns An new RoundInfo object
+ */
+const initRoundInfo = () => {
+  return {
+    sequenceStart: null,
+    sequenceEnd: null,
+    
+    sequence: null,
+    userSequence: null,
+
+    roundWin: null,
+    backwards: null,
+  }
+}
+
+/**
+ * Give a sequence of tiles, return an array of those tiles' locations (in order)
+ * @param {Array} sequence A sequence of indices to be used in tiles
+ * @param {Array} tiles A collection of tiles used by the game
+ */
+const sequenceToLocations = (sequence, tiles) => {
+  let ret = [];
+  sequence.forEach((index) => {
+    ret.push([tiles[index].x, tiles[index].y])
+  })
+  return ret;
+}
+
 function DigitSpan() {  
   // Level starts at level 2; May need to become state variable later in order
   // to indicate to users what level they are at 
@@ -169,11 +201,13 @@ function DigitSpan() {
   const userCanAdvance = useRef(false); // If a user has won at least once per level, they can advance to next level
 
   const [backwards, setBackwards] = useState(false);
+  const [modalOpen, setModalOpen ] = useState(false);
+  const [gameAnim, setGameAnim] = useState(null);
 
   /*
     Tiles is an array of tiles that each have info on:
-      - Coordinates (.x, .y) in the grid
-      - Whether it's lit up or not (.active)
+    - Coordinates (.x, .y) in the grid
+    - Whether it's lit up or not (.active)
   */
   const [tiles, setTiles] = useState(initTiles(gameRules.size));
   const [sequence, setSequence] = useState(  // Current sequence to match to
@@ -185,6 +219,14 @@ function DigitSpan() {
   
   const [userCanClick, setUserCanClick] = useState(false);
   const [userSequence, setUserSequence] = useState([]);
+  
+  // Data analytics :)
+  const result = useRef({
+    roundInfoArray: [],  // Array of info for each round played (sequence, length, user sequence, etc.)
+    clicks: [],  // Every click made by the user (time + location)
+  });
+
+  const currRoundInfo = useRef(initRoundInfo());
 
   useEffect( () => { 
     if (gameStarted) {  // Only run if the game has been started
@@ -192,11 +234,17 @@ function DigitSpan() {
       // Make sure user can't input while sequence plays
       setUserCanClick(false);
 
-      // 
       wait(gameRules.sequenceDelay).then( () => {
+
+        currRoundInfo.current.sequenceStart = new Date().getTime();
         
+        currRoundInfo.current.sequence = sequenceToLocations(sequence, tiles);;
+        currRoundInfo.current.backwards = backwards;
+
         // Play the newly built sequence
         playSequence(sequence, tiles, setTiles).then( () => {
+          
+          currRoundInfo.current.sequenceEnd = new Date().getTime();
           // After the sequence is done, do some other stuff 
           console.log("after sequence");
           
@@ -213,6 +261,7 @@ function DigitSpan() {
 
   // Compare the user sequence to the actual sequence and returns a boolean
   // indicating if a new round should start or not + updates state accordingly
+  // Also reports analytics details (user sequence, round win/loss, etc.)
   const handleRoundOutcome = (userSequence, actualSequence, backwardsFlag) => {
     const sequenceToCompare = !backwardsFlag ? 
       actualSequence :  // If not backwards sequence, just give the sequence
@@ -223,26 +272,48 @@ function DigitSpan() {
       // If user sequence matches given sequence in its entirety
       if (sequencesMatch(userSequence, sequenceToCompare)) {
 
+        // Report round results (analytics)
+        currRoundInfo.current.roundWin = true;
+        currRoundInfo.current.userSequence = sequenceToLocations(userSequence, tiles);
+        result.current.roundInfoArray.push(currRoundInfo.current);
+
         // User has succeeded this round, a new round should start
         // + that they can advance for this upcoming level
         roundsLeft.current -= 1;
         userCanAdvance.current = true;
+
+        // Play the appropriate animation (and reset it for later)
+        setGameAnim('success');
+        setTimeout(() => {setGameAnim(null);}, gameRules.sequenceDelay*.4);
+    
+
         return true;
       }
       return false;  // If not a full match, new round shouldn't start
     } else {
+      // Report round results
+      currRoundInfo.current.roundWin = false;
+      currRoundInfo.current.userSequence = sequenceToLocations(userSequence, tiles);
+      result.current.roundInfoArray.push(currRoundInfo.current);
+
       // User has lost this round, a new round should start
       roundsLeft.current -= 1;
+
+      // Play the appropriate animation (and reset it for later)
+      setGameAnim('error');
+      setTimeout(() => {setGameAnim(null);}, gameRules.sequenceDelay*.4);
+
       return true;
     }
   }
 
   // Resetting the necessary variables for the start of a new round
-  const startNewRound = () => {
+  const resetRoundState = () => {
     setSequence(buildSequence(level.current, gameRules.size**2));
     setUserSequence([]);
     setUserCanClick(false); 
-    setGameStarted(true);
+    currRoundInfo.current = initRoundInfo();
+    // setGameStarted(true);
   }
 
   // Resets all game variables to default-- this may not be necessary in final 
@@ -251,9 +322,9 @@ function DigitSpan() {
   const gameOver = () => {
     setSequence(buildSequence(level.current, gameRules.size**2));
     setUserSequence([]);
-    setBackwards(false);
     setUserCanClick(false);
     setGameStarted(false);
+    console.log(result.current);
   }
 
   // When the level ends, allow them to advance to the next level (if they won
@@ -270,6 +341,10 @@ function DigitSpan() {
         // User lost both rounds this level, they have to start the 
         // backwards sequence now (if they weren't on backwards sequence already)
         console.log("Backwards sequence started");
+
+        setModalOpen(true);
+        // TODO: pause game when modal is up, when closed they continue game
+        
         setBackwards(true);
         level.current = 2;  // Start from level 2 again
       } else {
@@ -284,15 +359,19 @@ function DigitSpan() {
     roundsLeft.current = 2;
     userCanAdvance.current = false;
   }
-
-  /* 
-    If the user can click, the tiles they have clicked so far (userSequence)
-    gets compared to the actual sequence.
-
-    If it matches/doesn't match, the sequences gets reset and no further input
-    is allowed
-  */
+  
+  // If the user can click, the tiles they have clicked so far (userSequence)
+  // gets compared to the actual sequence.
+  // If it matches/doesn't match, the sequences gets reset and no further input
+  // is allowed
   const handleClick = (userTile) => {
+
+    // Report the click for analytics
+    result.current.clicks.push({
+      coordinates: [tiles[userTile].x, tiles[userTile].y],
+      time: new Date().getTime(),
+      allowedToClick: userCanClick,
+    })
 
     if (userCanClick) {
 
@@ -304,14 +383,22 @@ function DigitSpan() {
       // Compare the user sequence to the actual one:
       //    - If full match, new round starts + user is allowed to advance level
       //    - If mistake, new round starts 
-      let shouldStartNewRound = handleRoundOutcome(newUserSequence, sequence, 
+      let shouldResetRoundState = handleRoundOutcome(newUserSequence, sequence, 
         backwards);
+
+      // Round should start automatically most of the time, except when the user
+      // starts backwards sequence/gets a game over
+      let shouldStartNewRoundAutomatically = shouldResetRoundState;
 
       // If they ran out of tries for this level, the level has ended
       if (roundsLeft.current == 0) {
         // If the game is fully over, make sure a new round can't start
-        if (!userCanAdvance.current && backwards) shouldStartNewRound = false;
-
+        if (!userCanAdvance.current && backwards) shouldResetRoundState = false;
+        
+        // If the user cannot advance (i.e. backwards sequence/game over)
+        // then this prevents the round from starting automatically
+        shouldStartNewRoundAutomatically = userCanAdvance.current;
+        
         /// When the level ends, allow them to advance to the next level 
         // (if they won at least one round)
         // Otherwise, start the backwards sequence/ end the entire game
@@ -320,9 +407,10 @@ function DigitSpan() {
 
       // If user input caused them to succeed/fail the round, a new round has
       // to start; Reset state for the new round
-      if (shouldStartNewRound) {
-        startNewRound();
-      }
+      // If level ending didn't cause backwards sequence/game over, start
+      // the round automatically
+      if (shouldResetRoundState) resetRoundState();
+      if (shouldStartNewRoundAutomatically) setGameStarted(true);
     }
   }
 
@@ -358,17 +446,32 @@ function DigitSpan() {
 
   return (
     <>
-    <View style={styles.container}>
-      {rows.map(renderRow)}
-    </View>
+      <GameInfo>
+          <Text style={{ fontSize: 18 }}>Level</Text>
+          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{level.current}</Text>
+      </GameInfo>
 
-    <View style={styles.buttons}>
-      <Button title="Start" onPress={() => setGameStarted(true)} />
-    </View>
+      <View style={styles.container}>
+        {rows.map(renderRow)}
+      </View>
+
+      <View style={styles.buttons}>
+        <Button title="Start" onPress={() => setGameStarted(true)} />
+      </View>
     </>
   );
 }
 
+const errorColor = '#E42217';
+const successColor = '#6CBB3C';
+
+const GameInfo = ({children}) => {
+  return (
+    <View style={[styles.gameInfo]}>
+      {children}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -389,6 +492,14 @@ const styles = StyleSheet.create({
   },
   activeTile: {
     backgroundColor: 'yellow', // Add your active tile style here
+  },
+  gameInfo: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    fontFamily: 'Arial, Helvetica, sans-serif',
+    paddingVertical: 16,
   },
 });
 
