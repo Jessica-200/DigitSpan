@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Animated } from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
 
 import Tile from './Tile';
 
@@ -451,7 +451,10 @@ function DigitSpan() {
           <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{level.current}</Text>
       </GameInfo>
 
-      <View style={styles.container}>
+      <View style={[
+          styles.container,
+          gameAnim != null && styles.containerAnim(gameAnim),
+        ] }>
         {rows.map(renderRow)}
       </View>
 
@@ -482,8 +485,6 @@ function DigitSpan() {
   );
 }
 
-const errorColor = '#E42217';
-const successColor = '#6CBB3C';
 
 const GameInfo = ({children}) => {
   return (
@@ -495,23 +496,20 @@ const GameInfo = ({children}) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0,
+    margin: 16,
     padding: 16,
+    borderRadius: 8,
+    borderStyle: 'solid',  // borderRadius doesn't work unless this is defined??
   },
+  containerAnim: gameAnim => ({
+    backgroundColor: gameAnim == 'success' ? '#6CBB3C' : "#E42217",
+  }),
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
-  },
-  tile: {
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#000',
-    marginRight: 8,
-  },
-  activeTile: {
-    backgroundColor: 'yellow', // Add your active tile style here
   },
   gameInfo: {
     flexDirection: 'column',
@@ -519,7 +517,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     fontFamily: 'Arial, Helvetica, sans-serif',
-    paddingVertical: 16,
+    // paddingVertical: 16,
   },
   centeredView: {
     flex: 1,
