@@ -421,6 +421,7 @@ function DigitSpan() {
         return (
           <Tile
             active={tile.active}
+            backwards={backwards}
             key={tile.key}
             tile={index}
             handleClick={() => handleClick(index)}
@@ -462,10 +463,6 @@ function DigitSpan() {
         animationType='fade'
         transparent={true}
         visible={modalOpen}
-        onRequestClose={() =>{
-          setGameStarted(true);
-        }}
-        // closeText='Ready to go?'
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -475,6 +472,7 @@ function DigitSpan() {
               title='Ready to go?'
               onPress={() => {
                 setModalOpen(false);
+                setGameStarted(true);
               }}
             />
           </View>
