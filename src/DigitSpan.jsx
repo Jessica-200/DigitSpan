@@ -1,9 +1,8 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { View, Button, StyleSheet, Text, TouchableOpacity, Animated } from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, TouchableOpacity, Animated } from 'react-native';
 
 import Tile from './Tile';
-import Modal from './Modal';
 
 const gridSize = 3;
 
@@ -458,6 +457,29 @@ function DigitSpan() {
       <View style={styles.buttons}>
         <Button title="Start" onPress={() => setGameStarted(true)} />
       </View>
+
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={modalOpen}
+        onRequestClose={() =>{
+          setGameStarted(true);
+        }}
+        // closeText='Ready to go?'
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            {/* TODO: this is where backwards instructional image would go */}
+            <Text>Backwards sequence started.</Text>
+            <Button
+              title='Ready to go?'
+              onPress={() => {
+                setModalOpen(false);
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -501,6 +523,25 @@ const styles = StyleSheet.create({
     fontFamily: 'Arial, Helvetica, sans-serif',
     paddingVertical: 16,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    padding: 32,
+    margin: 32,
+    borderRadius: 8,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  }
 });
 
 export default DigitSpan;
