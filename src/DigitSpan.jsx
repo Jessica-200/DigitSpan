@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { View, Button, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, Image, Dimensions } from 'react-native';
 
 import Tile from './Tile';
 
@@ -470,7 +470,7 @@ function DigitSpan() {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             {/* TODO: this is where backwards instructional image would go */}
-            <Text>Backwards sequence started.</Text>
+            <Image source={require('./assets/BackwardsInstructions.jpg')} style={styles.modalImg} />
             <Button
               title='Ready to go?'
               onPress={() => {
@@ -537,7 +537,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  }
+  },
+  modalImg: {
+    width: Dimensions.get('window').width*0.8,
+    height: Dimensions.get('window').width*0.8,
+    margin: 16,
+  },
 });
 
 export default DigitSpan;
