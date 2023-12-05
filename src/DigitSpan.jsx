@@ -2,13 +2,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Button, StyleSheet, Text, Modal, Image, Dimensions } from 'react-native';
 
-import Tile from './Tile';
+import Tile, { gridSize } from './Tile';
 
-//update gridSize in Tile.jsx to change size of tiles/scale
-const gridSize = 3;
 
-const gameRules = {
-  size: gridSize,
+export const gameRules = {
+  size: gridSize,  //update in Tile.jsx
   tileDelay: 500,  // Time between tiles lighting up in sequence
   sequenceDelay: 1250,  // Time between sequences
 };

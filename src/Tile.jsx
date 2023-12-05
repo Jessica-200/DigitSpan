@@ -1,9 +1,9 @@
-import { TouchableOpacity, StyleSheet, Image, View } from "react-native";
+import { TouchableOpacity, StyleSheet, Image, View, Dimensions } from "react-native";
 
-//update gridSize in DigitSpan.jsx as well for actual grid size
-const gridSize = 3;
-const tileSize = Math.ceil(270/gridSize);
-const spacing = Math.ceil(300/gridSize)
+export const gridSize = 3;
+const tileSize = Math.ceil((Dimensions.get('window').height/(gridSize*2)));
+const spacing = Math.ceil((Dimensions.get('window').width/(gridSize)));
+
 function Tile({active, backwards, tile, handleClick}) {
 
   // When the tile gets clicked, it'll pass its object/index to the parent
