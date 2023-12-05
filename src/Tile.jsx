@@ -15,7 +15,7 @@ function Tile({active, backwards, tile, handleClick}) {
   return (
     // Conditionally rendering the '.active' class allows us to conditionally apply
     // stylings
-    <View style={{width: spacing, height: spacing}}>
+    <View style={{width: spacing, height: spacing, alignItems: 'center'}}>
       <TouchableOpacity style={[styles.tile(backwards), active && styles.activeTile]}
         onPress={handleTileClick}>
         {<Image source={require('./assets/logo-200.png')} style={styles.tileImg}/> }
