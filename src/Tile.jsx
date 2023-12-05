@@ -1,5 +1,9 @@
 import { TouchableOpacity, StyleSheet, Image, View } from "react-native";
 
+//update gridSize in DigitSpan.jsx as well for actual grid size
+const gridSize = 3;
+const tileSize = Math.ceil(270/gridSize);
+const spacing = Math.ceil(300/gridSize)
 function Tile({active, backwards, tile, handleClick}) {
 
   // When the tile gets clicked, it'll pass its object/index to the parent
@@ -11,7 +15,7 @@ function Tile({active, backwards, tile, handleClick}) {
   return (
     // Conditionally rendering the '.active' class allows us to conditionally apply
     // stylings
-    <View style={{width: 100, height: 100}}>
+    <View style={{width: spacing, height: spacing}}>
       <TouchableOpacity style={[styles.tile(backwards), active && styles.activeTile]}
         onPress={handleTileClick}>
         {<Image source={require('./assets/logo-200.png')} style={styles.tileImg}/> }
@@ -24,7 +28,6 @@ function Tile({active, backwards, tile, handleClick}) {
 const forwardsColor = '#16309A';
 const backwardsColor = '#C04000';
 const activeColor = '#EAC117';
-
 const styles = StyleSheet.create({
   tile: backwards => ({
     display: 'flex',
@@ -32,10 +35,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     backgroundColor: !backwards ? forwardsColor : backwardsColor,
-    width: 90,
-    height: 90,
-    width: 90,
-    height: 90,
+    width: tileSize,
+    height: tileSize,
+    width: tileSize,
+    height: tileSize,
     borderRadius: 12,
   }),
   activeTile: {

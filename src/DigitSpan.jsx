@@ -4,6 +4,7 @@ import { View, Button, StyleSheet, Text, Modal, Image, Dimensions } from 'react-
 
 import Tile from './Tile';
 
+//update gridSize in Tile.jsx to change size of tiles/scale
 const gridSize = 3;
 
 const gameRules = {
@@ -11,6 +12,7 @@ const gameRules = {
   tileDelay: 500,  // Time between tiles lighting up in sequence
   sequenceDelay: 1250,  // Time between sequences
 };
+
 
 /**
  * Returns a 1D array of Tiles (key, coordinates, active or not)
