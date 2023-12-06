@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { View, Button, StyleSheet, Text, Modal, Image, Dimensions } from 'react-native';
+import { View, Button, StyleSheet, Text, Modal, Image, Dimensions, TouchableOpacity } from 'react-native';
 
 import Tile from './Tile';
 
@@ -449,8 +449,8 @@ function DigitSpan() {
   return (
     <>
       <GameInfo>
-          <Text style={{ fontSize: 18 }}>Level</Text>
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{level.current}</Text>
+          <Text style={styles.levelText}>Level</Text>
+          <Text style={styles.levelNumberText}>{level.current}</Text>
       </GameInfo>
 
       <View style={[
@@ -460,9 +460,11 @@ function DigitSpan() {
         {rows.map(renderRow)}
       </View>
 
-      <View style={styles.buttons}>
-        <Button title="Start" onPress={() => setGameStarted(true)} />
-      </View>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => setGameStarted(true)}>
+        <Text style={styles.startText}>Start</Text>
+      </TouchableOpacity>
 
       <Modal
         animationType='fade'
@@ -519,6 +521,21 @@ const styles = StyleSheet.create({
     width: '100%',
     fontFamily: 'Arial, Helvetica, sans-serif',
     // paddingVertical: 16,
+  },
+  levelText: {
+    fontSize: Dimensions.get('window').width*0.05,
+  },
+  levelNumberText: {
+    fontSize: Dimensions.get('window').width*0.06,
+    fontWeight: 'bold',
+  },
+  button: {
+    backgroundColor: '#B6D0E2',
+    padding: 10,
+    borderRadius: 5,
+  },
+  startText: {
+    fontSize: Dimensions.get('window').width*0.045,
   },
   centeredView: {
     flex: 1,
