@@ -34,7 +34,7 @@ const dataToServer = async (rawData) => {
 */
 
 export const gameRules = {
-  gridSize: 4,
+  gridSize: 3,
   tileDelay: 500,  // Time between tiles lighting up in sequence
   sequenceDelay: 1250,  // Time between sequences
 };
@@ -249,6 +249,7 @@ function DigitSpan() {
   
   // Data analytics :)
   const result = useRef({
+    gridSize: gameRules.gridSize,
     roundInfoArray: [],  // Array of info for each round played (sequence, length, user sequence, etc.)
     clicks: [],  // Every click made by the user (time + location)
   });
@@ -395,7 +396,6 @@ function DigitSpan() {
 
     // Report the click for analytics
     result.current.clicks.push({
-      gridSize: gameRules.gridSize,
       coordinates: [tiles[userTile].x, tiles[userTile].y],
       time: new Date().getTime(),
       allowedToClick: userCanClick,
