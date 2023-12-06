@@ -2,11 +2,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Button, StyleSheet, Text, Modal, Image, Dimensions } from 'react-native';
 
-import Tile, { gridSize } from './Tile';
+import Tile from './Tile';
 
 
 export const gameRules = {
-  size: gridSize,  //update in Tile.jsx
+  gridSize: 3,
   tileDelay: 500,  // Time between tiles lighting up in sequence
   sequenceDelay: 1250,  // Time between sequences
 };
@@ -208,9 +208,9 @@ function DigitSpan() {
     - Coordinates (.x, .y) in the grid
     - Whether it's lit up or not (.active)
   */
-  const [tiles, setTiles] = useState(initTiles(gameRules.size));
+  const [tiles, setTiles] = useState(initTiles(gameRules.gridSize));
   const [sequence, setSequence] = useState(  // Current sequence to match to
-    buildSequence(level.current, gameRules.size**2)
+    buildSequence(level.current, gameRules.gridSize**2)
   );
 
   // TODO: Remove this; demo purposes only
@@ -308,7 +308,7 @@ function DigitSpan() {
 
   // Resetting the necessary variables for the start of a new round
   const resetRoundState = () => {
-    setSequence(buildSequence(level.current, gameRules.size**2));
+    setSequence(buildSequence(level.current, gameRules.gridSize**2));
     setUserSequence([]);
     setUserCanClick(false); 
     currRoundInfo.current = initRoundInfo();
@@ -319,7 +319,7 @@ function DigitSpan() {
   // version; this just allows us to use the 'Start Game' button to reset the
   // game
   const gameOver = () => {
-    setSequence(buildSequence(level.current, gameRules.size**2));
+    setSequence(buildSequence(level.current, gameRules.gridSize**2));
     setUserSequence([]);
     setUserCanClick(false);
     setGameStarted(false);
@@ -417,14 +417,15 @@ function DigitSpan() {
   const renderRow = (rowTiles, rowIndex) => (
     <View style={styles.row} key={rowIndex}>
       {rowTiles.map((tile, columnIndex) => {
-        const index = rowIndex * gridSize + columnIndex;
+        const index = rowIndex * gameRules.gridSize + columnIndex;
         return (
           <Tile
             active={tile.active}
             backwards={backwards}
-            key={tile.key}
             tile={index}
+            gridSize={gameRules.gridSize}
             handleClick={() => handleClick(index)}
+            key={tile.key}
           >
             {tile.x}, {tile.y}, {index}
           </Tile>
@@ -469,7 +470,6 @@ function DigitSpan() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            {/* TODO: this is where backwards instructional image would go */}
             <Image source={require('./assets/BackwardsInstructions.jpg')} style={styles.modalImg} />
             <Button
               title='Ready to go?'

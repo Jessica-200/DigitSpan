@@ -1,10 +1,14 @@
 import { TouchableOpacity, StyleSheet, Image, View, Dimensions } from "react-native";
 
-export const gridSize = 3;
-const tileSize = Math.ceil((Dimensions.get('window').height/(gridSize*2)));
-const spacing = Math.ceil((Dimensions.get('window').width/(gridSize)));
+const calcTileSize = (gridSize) => {
+  return Math.ceil((Dimensions.get('window').height/(gridSize*2.5)));
+}
 
-function Tile({active, backwards, tile, handleClick}) {
+const calcSpacing = (gridSize) => {
+  return Math.ceil((Dimensions.get('window').width/(gridSize)));
+}
+
+function Tile({active, backwards, tile, gridSize, handleClick}) {
 
   // When the tile gets clicked, it'll pass its object/index to the parent
   // through handle click
@@ -15,8 +19,8 @@ function Tile({active, backwards, tile, handleClick}) {
   return (
     // Conditionally rendering the '.active' class allows us to conditionally apply
     // stylings
-    <View style={{width: spacing, height: spacing, alignItems: 'center'}}>
-      <TouchableOpacity style={[styles.tile(backwards), active && styles.activeTile]}
+    <View style={styles.wrapper(gridSize)}>
+      <TouchableOpacity style={[styles.tile(backwards, gridSize), active && styles.activeTile]}
         onPress={handleTileClick}>
         {<Image source={require('./assets/logo-200.png')} style={styles.tileImg}/> }
       </TouchableOpacity>
@@ -29,17 +33,24 @@ const forwardsColor = '#16309A';
 const backwardsColor = '#C04000';
 const activeColor = '#EAC117';
 const styles = StyleSheet.create({
-  tile: backwards => ({
+  tile: (backwards, gridSize) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
 
     backgroundColor: !backwards ? forwardsColor : backwardsColor,
-    width: tileSize,
-    height: tileSize,
-    width: tileSize,
-    height: tileSize,
+    width: calcTileSize(gridSize),
+    height: calcTileSize(gridSize),
+    width: calcTileSize(gridSize),
+    height: calcTileSize(gridSize),
     borderRadius: 12,
+  }),
+  wrapper: gridSize => ({
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: calcSpacing(gridSize),
+    height: calcSpacing(gridSize),
   }),
   activeTile: {
     backgroundColor: activeColor,
