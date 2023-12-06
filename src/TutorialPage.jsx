@@ -14,7 +14,7 @@ const TutorialPage = ({ onNext }) => {
     <SafeAreaView style={styles.container}>
       
       <ScrollView contentContainerStyle={styles.scrollView}>
-      <Image source={require('./assets/DigitSpanInstructions.jpg')} 
+      <Image source={require('./assets/InitialInstructions.jpg')} 
         style={{width: screenWidth, height: screenHeight + 200}}
         resizeMode="contain"/>
       </ScrollView>
