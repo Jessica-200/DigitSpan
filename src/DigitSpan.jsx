@@ -4,6 +4,34 @@ import { View, Button, StyleSheet, Text, Modal, Image, Dimensions, TouchableOpac
 
 import Tile from './Tile';
 
+const url = 'http://localhost:3000';
+const endpoint1 = '/send_data';
+
+const userName = ''
+/*
+/**
+ * Sends raw data to server for data analyzation 
+ * @param {Array} rawData // Array that carries raw data related to clicks and round info
+ * @returns
+ */
+/*
+const dataToServer = async (rawData) => {
+  try {
+    const response = await fetch(`${url}${endpoint1}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ rawData }),
+    });
+
+    const result = await response.json();
+    console.log(result);
+  } catch (error) {
+    console.error('Error occured in attempt to send data to server:', error);
+  }
+};
+*/
 
 export const gameRules = {
   gridSize: 4,
@@ -323,7 +351,7 @@ function DigitSpan() {
     setUserSequence([]);
     setUserCanClick(false);
     setGameStarted(false);
-    console.log(result.current);
+    console.log(result.current);//dataToServer(result.current);
   }
 
   // When the level ends, allow them to advance to the next level (if they won
