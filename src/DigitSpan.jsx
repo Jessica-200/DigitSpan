@@ -6,7 +6,7 @@ import Tile from './Tile';
 
 
 export const gameRules = {
-  gridSize: 3,
+  gridSize: 4,
   tileDelay: 500,  // Time between tiles lighting up in sequence
   sequenceDelay: 1250,  // Time between sequences
 };
@@ -107,7 +107,7 @@ const playSequence = (sequence, tiles, setTiles) => {
   // Allows for the last actual tile to be activated and unactivated properly
   const displaySequence = [...sequence, -1];
 
-  console.log(sequence);
+  // console.log(sequence);
 
   // Using a Promise allows us to await/.then() to wait until the interval 
   // is done playing before moving on
@@ -245,7 +245,7 @@ function DigitSpan() {
           
           currRoundInfo.current.sequenceEnd = new Date().getTime();
           // After the sequence is done, do some other stuff 
-          console.log("after sequence");
+          // console.log("after sequence");
           
           // Stop game/sequence + allow for user input
           setUserCanClick(true);
@@ -332,14 +332,14 @@ function DigitSpan() {
   const handleLevelEnd = () => {
     if (userCanAdvance.current) {
       // User won at least 1 round this level, they can advance to next level 
-      console.log("User won at least once, new level");
+      // console.log("User won at least once, new level");
       level.current += 1;
 
     } else {
       if (!backwards) {
         // User lost both rounds this level, they have to start the 
         // backwards sequence now (if they weren't on backwards sequence already)
-        console.log("Backwards sequence started");
+        // console.log("Backwards sequence started");
 
         setModalOpen(true);
         // TODO: pause game when modal is up, when closed they continue game
@@ -349,7 +349,7 @@ function DigitSpan() {
       } else {
         // If they were on backwards sequences and lost both rounds,
         // the entire game is over now
-        console.log("Game over");
+        // console.log("Game over");
         gameOver();  // Reset game state to default (just in case)
       }
     }
@@ -367,6 +367,7 @@ function DigitSpan() {
 
     // Report the click for analytics
     result.current.clicks.push({
+      gridSize: gameRules.gridSize,
       coordinates: [tiles[userTile].x, tiles[userTile].y],
       time: new Date().getTime(),
       allowedToClick: userCanClick,
@@ -377,7 +378,7 @@ function DigitSpan() {
       // Update user's sequence based on tile they clicked
       const newUserSequence = [...userSequence, userTile]; 
       setUserSequence(newUserSequence);
-      console.log(`user: ${newUserSequence}`);
+      // console.log(`user: ${newUserSequence}`);
 
       // Compare the user sequence to the actual one:
       //    - If full match, new round starts + user is allowed to advance level
