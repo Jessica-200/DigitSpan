@@ -324,7 +324,7 @@ function DigitSpan() {
     setUserSequence([]);
     setUserCanClick(false);
     setGameStarted(false);
-    console.log(resultRef.current);
+    console.log(resultRef.current); // final results
   }
 
   // When the level ends, allow them to advance to the next level (if they won
