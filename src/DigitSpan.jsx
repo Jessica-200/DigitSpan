@@ -4,34 +4,6 @@ import { View, Button, StyleSheet, Text, Modal, Image, Dimensions, TouchableOpac
 
 import Tile from './Tile';
 
-const url = 'http://localhost:3000';
-const endpoint1 = '/send_data';
-
-const userName = ''
-/*
-/**
- * Sends raw data to server for data analyzation 
- * @param {Array} rawData // Array that carries raw data related to clicks and round info
- * @returns
- */
-/*
-const dataToServer = async (rawData) => {
-  try {
-    const response = await fetch(`${url}${endpoint1}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ rawData }),
-    });
-
-    const result = await response.json();
-    console.log(result);
-  } catch (error) {
-    console.error('Error occured in attempt to send data to server:', error);
-  }
-};
-*/
 
 export const gameRules = {
   gridSize: 3,
@@ -248,7 +220,7 @@ function DigitSpan() {
   const [userSequence, setUserSequence] = useState([]);
   
   // Data analytics :)
-  const result = useRef({
+  const resultRef = useRef({
     gridSize: gameRules.gridSize,
     roundInfoArray: [],  // Array of info for each round played (sequence, length, user sequence, etc.)
     clicks: [],  // Every click made by the user (time + location)
@@ -303,7 +275,7 @@ function DigitSpan() {
         // Report round results (analytics)
         currRoundInfo.current.roundWin = true;
         currRoundInfo.current.userSequence = sequenceToLocations(userSequence, tiles);
-        result.current.roundInfoArray.push(currRoundInfo.current);
+        resultRef.current.roundInfoArray.push(currRoundInfo.current);
 
         // User has succeeded this round, a new round should start
         // + that they can advance for this upcoming level
@@ -322,7 +294,7 @@ function DigitSpan() {
       // Report round results
       currRoundInfo.current.roundWin = false;
       currRoundInfo.current.userSequence = sequenceToLocations(userSequence, tiles);
-      result.current.roundInfoArray.push(currRoundInfo.current);
+      resultRef.current.roundInfoArray.push(currRoundInfo.current);
 
       // User has lost this round, a new round should start
       roundsLeft.current -= 1;
@@ -352,7 +324,7 @@ function DigitSpan() {
     setUserSequence([]);
     setUserCanClick(false);
     setGameStarted(false);
-    console.log(result.current);//dataToServer(result.current);
+    console.log(resultRef.current);
   }
 
   // When the level ends, allow them to advance to the next level (if they won
@@ -395,7 +367,7 @@ function DigitSpan() {
   const handleClick = (userTile) => {
 
     // Report the click for analytics
-    result.current.clicks.push({
+    resultRef.current.clicks.push({
       coordinates: [tiles[userTile].x, tiles[userTile].y],
       time: new Date().getTime(),
       allowedToClick: userCanClick,
